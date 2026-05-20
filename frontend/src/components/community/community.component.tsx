@@ -10,8 +10,6 @@ const CommunityComponent: React.FC = () => {
 
   return (
     <div className="gradient-bg min-h-screen text-white">
-      <NavListComponent />
-      
       {/* Hero Section */}
       <section 
         className="relative pb-20 overflow-hidden"
@@ -62,7 +60,7 @@ const CommunityComponent: React.FC = () => {
               Each hub offers specific AI prompt templates and discussion boards.
             </p>
           </div>
-          <Link to="/community/genres" className="group flex items-center text-blue-400 font-semibold transition-all">
+          <Link to="/community" className="group flex items-center text-blue-400 font-semibold transition-all">
             <span className="underline underline-offset-8 decoration-blue-500/30 group-hover:decoration-blue-500 transition-all">VIEW ALL GENRES</span>
             <i className="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
           </Link>

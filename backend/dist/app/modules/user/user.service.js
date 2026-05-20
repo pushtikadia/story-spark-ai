@@ -105,6 +105,45 @@ const getProfileInfo = (token) => __awaiter(void 0, void 0, void 0, function* ()
     }
     return user;
 });
+const toggleFollow = (token, authorId) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentUser = yield user_model_1.User.findOne({ email: token.email });
+    if (!currentUser) {
+        throw new api_error_1.default(http_status_1.default.BAD_REQUEST, "User not found!");
+    }
+    const author = yield user_model_1.User.findById(authorId);
+    if (!author) {
+        throw new api_error_1.default(http_status_1.default.BAD_REQUEST, "Author not found!");
+    }
+    const isFollowing = currentUser.following.includes(author._id);
+    if (isFollowing) {
+        // Unfollow
+        yield user_model_1.User.findByIdAndUpdate(currentUser._id, {
+            $pull: { following: author._id },
+        });
+        yield user_model_1.User.findByIdAndUpdate(author._id, {
+            $pull: { followers: currentUser._id },
+        });
+        return { isFollowing: false };
+    }
+    else {
+        // Follow
+        yield user_model_1.User.findByIdAndUpdate(currentUser._id, {
+            $addToSet: { following: author._id },
+        });
+        yield user_model_1.User.findByIdAndUpdate(author._id, {
+            $addToSet: { followers: currentUser._id },
+        });
+        return { isFollowing: true };
+    }
+});
+const getFollowStatus = (token, authorId) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentUser = yield user_model_1.User.findOne({ email: token.email });
+    if (!currentUser) {
+        return { isFollowing: false };
+    }
+    const isFollowing = currentUser.following.some((id) => id.toString() === authorId);
+    return { isFollowing };
+});
 exports.UserService = {
     getAllUsers,
     getUser,
@@ -114,4 +153,6 @@ exports.UserService = {
     applyForWriter,
     approveWriterApplication,
     getAllWriterApplicationUsers,
+    toggleFollow,
+    getFollowStatus,
 };

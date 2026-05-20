@@ -124,6 +124,28 @@ const getProfileInfo = (0, catch_async_1.default)((req, res) => __awaiter(void 0
         data: result,
     });
 }));
+const toggleFollow = (0, catch_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = yield (0, token_1.getToken)(req);
+    const authorId = (0, route_param_1.routeParam)(req.params.authorId);
+    const result = yield user_service_1.UserService.toggleFollow(token, authorId);
+    (0, send_response_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: result.isFollowing ? "Followed successfully!" : "Unfollowed successfully!",
+        data: result,
+    });
+}));
+const getFollowStatus = (0, catch_async_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = yield (0, token_1.getToken)(req);
+    const authorId = (0, route_param_1.routeParam)(req.params.authorId);
+    const result = yield user_service_1.UserService.getFollowStatus(token, authorId);
+    (0, send_response_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Follow status fetched successfully!",
+        data: result,
+    });
+}));
 exports.UserController = {
     getAllUsers,
     getUser,
@@ -133,4 +155,6 @@ exports.UserController = {
     applyForWriter,
     approveWriterApplication,
     getAllWriterApplicationUsers,
+    toggleFollow,
+    getFollowStatus,
 };

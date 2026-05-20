@@ -121,7 +121,7 @@ const getProfileInfo = catchAsync(async (req: Request, res: Response) => {
 
 const toggleFollow = catchAsync(async (req: Request, res: Response) => {
   const token = await getToken(req);
-  const { authorId } = req.params;
+  const authorId = routeParam(req.params.authorId);
   const result = await UserService.toggleFollow(token, authorId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -133,7 +133,7 @@ const toggleFollow = catchAsync(async (req: Request, res: Response) => {
 
 const getFollowStatus = catchAsync(async (req: Request, res: Response) => {
   const token = await getToken(req);
-  const { authorId } = req.params;
+  const authorId = routeParam(req.params.authorId);
   const result = await UserService.getFollowStatus(token, authorId);
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getShortenedText, ITopicData, topicsData } from "./stories.utils";
 import toast, { Toaster } from "react-hot-toast";
 import { useCreatePostMutation } from "../../redux/apis/post.api";
+import jsPDF from "jspdf";
 
 export interface IStories {
   uuid: string;
@@ -32,6 +33,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const [topics, setTopics] = useState<ITopicData[]>(topicsData);
   const [selectTopics, setSelectTopics] = useState<ITopicData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [createPost] = useCreatePostMutation();
 
   useEffect(() => {
@@ -53,7 +55,43 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
     updatedTopics[index].selected = !updatedTopics[index].selected;
     setTopics(updatedTopics);
   };
+const handleCopyStory = async () => {
+  if (selectedStory?.content) {
+    await navigator.clipboard.writeText(selectedStory.content);
+    setIsCopied(true);
+    toast.success("Story copied!");
+    setTimeout(() => setIsCopied(false), 2000);
+       }
+    };
 
+const handleExportPDF = () => {
+  if (!selectedStory) {
+    toast.error("No story available to export.");
+    return;
+  }
+
+  try {
+    const doc = new jsPDF();
+
+    const title = selectedStory.title || "Story";
+    const content = selectedStory.content || "";
+
+    doc.setFontSize(18);
+    doc.text(title, 15, 20);
+
+    doc.setFontSize(12);
+
+    const splitText = doc.splitTextToSize(content, 180);
+    doc.text(splitText, 15, 35);
+
+    doc.save(`${title}.pdf`);
+
+    toast.success("PDF downloaded!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to export PDF.");
+  }
+};
   const handelPublishStory = async () => {
     if (!isLogin) {
       toast.error("Please login to publish the story.");
@@ -126,20 +164,45 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
               <h3 className="text-xl font-semibold text-gray-300">
                 Generated Story
               </h3>
-              <span className="text-sm text-gray-800">
-                <button
-                  className={`rounded-lg px-4 py-1 font-semibold flex items-center space-x-2 cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-gray-300 ${
-                    loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:shadow-lg hover:shadow-indigo-500/50"
-                  }`}
-                  onClick={handelPublishStory}
-                >
-                  {loading ? "Publishing..." : "Publish"}
-                </button>
-              </span>
+              <div className="flex items-center gap-2">
+  {selectedStory && (
+    <>
+      <button
+        type="button"
+        className="rounded-lg px-4 py-1 bg-gray-700 text-gray-200 font-semibold cursor-pointer"
+        onClick={handleCopyStory}
+      >
+        {isCopied ? "✓ Copied" : "📋 Copy"}
+      </button>
+
+      <button
+        type="button"
+        className="rounded-lg px-4 py-1 bg-purple-700 text-gray-200 font-semibold cursor-pointer"
+        onClick={handleExportPDF}
+      >
+        📄 Export PDF
+      </button>
+    </>
+  )}
+
+  <button
+    type="button"
+    className={`rounded-lg px-4 py-1 font-semibold flex items-center space-x-2 cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-gray-300 ${
+      loading
+        ? "opacity-50 cursor-not-allowed"
+        : "hover:shadow-lg hover:shadow-indigo-500/50"
+    }`}
+    onClick={handelPublishStory}
+    disabled={loading}
+  >
+    {loading ? "Publishing..." : "Publish"}
+  </button>
+</div>
             </div>
-            <div className="prose max-w-none text-gray-400">
+            <div
+  id="story-content"
+  className="prose max-w-none text-gray-400"
+>
               {selectedStory ? (
                 <p className="break-words">{selectedStory.content}</p>
               ) : (
@@ -203,7 +266,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                   <h6 className="mb-1 text-gray-300 text-xl font-semibold">
                     {selectedStory.title}
                   </h6>
-                  <p className="text-gray-400 font-light break-words text-sm sm:text-base">
+                  <p className="text-gray-400 font-light breakwords text-sm sm:text-base">
                     {getShortenedText(selectedStory.content)}
                   </p>
                 </div>

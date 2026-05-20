@@ -25,4 +25,8 @@ router.delete("/:id", (0, auth_middleware_1.default)(user_1.ENUM_USER_ROLE.ADMIN
 router.post("/apply-for-writer", (0, auth_middleware_1.default)(user_1.ENUM_USER_ROLE.USER), user_controller_1.UserController.applyForWriter);
 // Apply for Writer
 router.post("/approve-writer-application", (0, auth_middleware_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.SUPER_ADMIN, user_1.ENUM_USER_ROLE.WRITER), user_controller_1.UserController.approveWriterApplication);
+// Follow / Unfollow
+router.post("/follow/:authorId", (0, auth_middleware_1.default)(user_1.ENUM_USER_ROLE.USER, user_1.ENUM_USER_ROLE.WRITER, user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.SUPER_ADMIN), user_controller_1.UserController.toggleFollow);
+// Get Follow Status
+router.get("/follow-status/:authorId", (0, auth_middleware_1.default)(user_1.ENUM_USER_ROLE.USER, user_1.ENUM_USER_ROLE.WRITER, user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.SUPER_ADMIN), user_controller_1.UserController.getFollowStatus);
 exports.UserRouter = router;

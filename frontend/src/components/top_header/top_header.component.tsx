@@ -44,7 +44,7 @@ const TopHeaderComponent = () => {
                 <div>
                   <button
                     type="button"
-                    className="!rounded-button p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none"
+                    className="!rounded-button p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer"
                     onClick={() => setShowNotification(true)}
                   >
                     <i className="fa-solid fa-bell"></i>

@@ -94,7 +94,7 @@ const PostDetailsComponent = () => {
                 </div>
               </div>
               <div className="">
-                {currentUser && authorId !== currentUser?.id && (
+                {currentUser && authorId !== currentUser?.userId && (
                   <button
                     onClick={handleFollow}
                     className={`mt-2 rounded px-4 py-1 text-sm cursor-pointer transition-all ${
