@@ -24,6 +24,7 @@ const user_model_1 = require("./app/modules/user/user.model");
 const app = (0, express_1.default)();
 const defaultCorsOrigins = [
     "http://localhost:4001",
+    "http://localhost:4002",
     "https://storysparkai.vercel.app",
 ];
 const corsOrigins = config_1.default.cors_origins && config_1.default.cors_origins.length > 0

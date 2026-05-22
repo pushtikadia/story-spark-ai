@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.unsubscribeNewsletter = exports.verifyNewsletter = exports.subscribeNewsletter = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const newsletter_model_1 = require("./newsletter.model");
+const email_util_1 = require("../../../utils/email.util");
 const subscribeNewsletter = (email, name, source, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const normalizedEmail = email.trim().toLowerCase();
     const existing = yield newsletter_model_1.NewsletterSubscriber.findOne({ email: normalizedEmail });
@@ -28,6 +29,8 @@ const subscribeNewsletter = (email, name, source, userId) => __awaiter(void 0, v
             existing.verificationToken = crypto_1.default.randomBytes(32).toString("hex");
             existing.verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
             yield existing.save();
+            // Send verification email
+            yield (0, email_util_1.sendVerificationEmail)(normalizedEmail, existing.verificationToken);
             return { message: "Re-subscribed. Please verify your email.", subscriber: existing };
         }
     }
@@ -43,7 +46,8 @@ const subscribeNewsletter = (email, name, source, userId) => __awaiter(void 0, v
         verificationToken: token,
         verificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
-    // TODO: send verification email using project's email utility
+    // Send verification email
+    yield (0, email_util_1.sendVerificationEmail)(normalizedEmail, token);
     return { message: "Subscribed! Please verify your email.", subscriber };
 });
 exports.subscribeNewsletter = subscribeNewsletter;

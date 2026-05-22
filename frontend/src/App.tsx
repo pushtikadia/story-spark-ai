@@ -77,7 +77,6 @@ function App() {
   }, [darkMode]);
 
   return (
-     <ErrorBoundary>
     <Router>
       {/* Dark Mode Toggle Button */}
       {/* <div className="fixed top-4 right-4 z-50">
@@ -124,15 +123,15 @@ function App() {
           }
         />
 
-<Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute
-      element={<DashboardLayout />}
-      allowedRoles={[USER_ROLE.ADMIN]}
-    />
-  }
->
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute
+              element={<DashboardLayout />}
+              allowedRoles={[USER_ROLE.ADMIN]}
+            />
+          }
+        >
           <Route
             index
             element={
@@ -229,8 +228,8 @@ function App() {
               />
             }
           />
-        
-         </Route>     
+
+        </Route>
         <Route
           path="/stories"
           element={
@@ -270,24 +269,24 @@ function App() {
             </RootLayout>
           }
         />
-       <Route
-  path="/explore"
-  element={
-    <ProtectedRoute
-      element={
-        <RootLayout>
-          <ExploreComponent />
-        </RootLayout>
-      }
-      allowedRoles={[
-        USER_ROLE.USER,
-        USER_ROLE.WRITER,
-        USER_ROLE.ADMIN,
-        USER_ROLE.SUPER_ADMIN,
-      ]}
-    />
-  }
-/>
+        <Route
+          path="/explore"
+          element={
+            <ProtectedRoute
+              element={
+                <RootLayout>
+                  <ExploreComponent />
+                </RootLayout>
+              }
+              allowedRoles={[
+                USER_ROLE.USER,
+                USER_ROLE.WRITER,
+                USER_ROLE.ADMIN,
+                USER_ROLE.SUPER_ADMIN,
+              ]}
+            />
+          }
+        />
         <Route
           path="/help"
           element={
@@ -339,23 +338,23 @@ function App() {
           }
         />
         <Route
-  path="/contact-us"
-  element={
-    <ProtectedRoute
-      element={
-        <RootLayout>
-          <Contact />
-        </RootLayout>
-      }
-      allowedRoles={[
-        USER_ROLE.USER,
-        USER_ROLE.WRITER,
-        USER_ROLE.ADMIN,
-        USER_ROLE.SUPER_ADMIN,
-      ]}
-    />
-  }
-/>
+          path="/contact-us"
+          element={
+            <ProtectedRoute
+              element={
+                <RootLayout>
+                  <Contact />
+                </RootLayout>
+              }
+              allowedRoles={[
+                USER_ROLE.USER,
+                USER_ROLE.WRITER,
+                USER_ROLE.ADMIN,
+                USER_ROLE.SUPER_ADMIN,
+              ]}
+            />
+          }
+        />
         <Route
           path="/blog"
           element={
@@ -380,24 +379,24 @@ function App() {
             </RootLayout>
           }
         />
-       <Route
-  path="/community"
-  element={
-    <ProtectedRoute
-      element={
-        <RootLayout>
-          <CommunityComponent />
-        </RootLayout>
-      }
-      allowedRoles={[
-        USER_ROLE.USER,
-        USER_ROLE.WRITER,
-        USER_ROLE.ADMIN,
-        USER_ROLE.SUPER_ADMIN,
-      ]}
-    />
-  }
-/>
+        <Route
+          path="/community"
+          element={
+            <ProtectedRoute
+              element={
+                <RootLayout>
+                  <CommunityComponent />
+                </RootLayout>
+              }
+              allowedRoles={[
+                USER_ROLE.USER,
+                USER_ROLE.WRITER,
+                USER_ROLE.ADMIN,
+                USER_ROLE.SUPER_ADMIN,
+              ]}
+            />
+          }
+        />
         <Route
           path="*"
           element={
@@ -408,7 +407,6 @@ function App() {
         />
       </Routes>
     </Router>
-    </ErrorBoundary>
   );
 }
 export default App;
