@@ -2,31 +2,34 @@ import { useGetLatestListsQuery } from "../../../redux/apis/post.api";
 import { Post } from "../../../models/post";
 import LoadingAnimation from "../../loading/loading.component";
 import SSProfile from "../../ui-component/ss-profile/ss-profile";
-import BookmarkButton from "../../BookmarkButton"; // Import the core bookmark module
+import BookmarkButton from "../../BookmarkButton";
 import { useNavigate } from "react-router-dom";
+import { useToggleReactionMutation } from "../../../redux/apis/reaction.api";
+import toast from "react-hot-toast";
 
 const CommunitySpotlightComponent = () => {
   const { data, isLoading } = useGetLatestListsQuery(undefined);
- fix/269-like_button
-  const handleLike = async (postId: string) => {
-  try {
-    console.log("Liked:", postId);
-
-   
-  } catch (error) {
-    console.error(error);
-  }
-};
-
   const navigate = useNavigate();
+  const [toggleReaction] = useToggleReactionMutation();
 
-  // Dynamic reading calculation logic
   const calculateReadingTime = (content: string): number => {
     if (!content) return 1;
     const words = content.trim().split(/\s+/).length;
     return Math.max(1, Math.ceil(words / 200));
   };
- main
+
+  const handleLike = async (
+    e: React.MouseEvent,
+    postId: string
+  ) => {
+    e.stopPropagation();
+    try {
+      await toggleReaction({ postId }).unwrap();
+    } catch (error) {
+      console.error(error);
+      toast.error("You need to login to perform this action");
+    }
+  };
 
   if (isLoading) {
     return <LoadingAnimation />;
@@ -63,7 +66,6 @@ const CommunitySpotlightComponent = () => {
                           {new Date(post.publishedAt).toLocaleDateString()}
                         </p>
                         <span className="text-gray-600 text-xs">•</span>
-                        {/* ⏱️ Dynamic Reading Time Badging */}
                         <span className="text-xs text-purple-400 font-medium">
                           ⏱️ {calculateReadingTime(post.content)} min read
                         </span>
@@ -71,7 +73,6 @@ const CommunitySpotlightComponent = () => {
                     </div>
                   </div>
 
-                  {/* 🔖 Bookmark flag widget with redirection shield */}
                   <div onClick={(e) => e.stopPropagation()} className="relative z-10">
                     <BookmarkButton
                       storyId={post._id}
@@ -93,16 +94,14 @@ const CommunitySpotlightComponent = () => {
                   <span className="flex items-center gap-1">
                     <i className="far fa-eye"></i> {post.viewsCount}
                   </span>
-                  <button 
-                   onClick={() => handleLike(post._id)} 
-                   className="flex items-center gap-1 text-gray-500 hover:text-red-400 transition"
-                  >                       
-                   <i className="far fa-heart"></i>
-                   {post.likesCount}
+                  <button
+                    type="button"
+                    onClick={(e) => handleLike(e, post._id)}
+                    className="flex items-center gap-1 text-gray-500 hover:text-red-400 transition"
+                  >
+                    <i className="far fa-heart"></i>
+                    {post.likesCount}
                   </button>
-                  <span className="flex items-center gap-1">
-                    <i className="far fa-heart"></i> {post.likesCount}
-                  </span>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {post.topic.slice(0, 2).map((topic) => (
