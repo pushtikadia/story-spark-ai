@@ -66,9 +66,22 @@ const getPosts = async (
     });
   }
 
-  if (genres && genres.length > 0) {
+  const genreList = Array.isArray(genres)
+    ? genres
+    : typeof genres === "string"
+      ? genres.split(",").map((g) => g.trim()).filter(Boolean)
+      : [];
+
+  if (genreList.length > 0) {
     andCondition.push({
-      tag: { $in: genres },
+      $or: genreList.map((genre) => ({
+        tag: {
+          $regex: new RegExp(
+            `^${genre.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+            "i",
+          ),
+        },
+      })),
     });
   }
 

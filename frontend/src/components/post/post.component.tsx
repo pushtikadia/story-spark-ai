@@ -32,7 +32,7 @@ const ExploreComponent = () => {
   }
 
   if (selectedTags.length > 0) {
-    query["tags"] = selectedTags.join(",");
+    query["genres"] = selectedTags.join(",");
   }
 
   const { data, isLoading } = useGetPostListsQuery({ ...query });
