@@ -15,6 +15,7 @@ export interface IPostPayload {
   language?: string;
   emotions?: string[];
   genre?: string;
+  isPublished?: boolean;
 }
 
 export interface IPost extends IPostPayload {
