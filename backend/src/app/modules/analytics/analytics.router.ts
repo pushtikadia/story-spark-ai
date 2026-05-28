@@ -1,7 +1,9 @@
 import express from "express";
 import { AnalyticsController } from "./analytics.controller";
-import auth from "../../middleware/auth.middleware";
+
 import { ENUM_USER_ROLE } from "../../../enums/user";
+import auth from "../../middleware/auth.middleware";
+
 
 const router = express.Router();
 
@@ -9,6 +11,7 @@ router.get("/overview", AnalyticsController.getAnalyticsOverview);
 router.get("/heatmap", AnalyticsController.getHeatmap);
 router.get("/genres", AnalyticsController.getGenreDistribution);
 router.get("/wordcloud", AnalyticsController.getWordCloud);
+
 router.get(
   "/productive-hours",
   auth(

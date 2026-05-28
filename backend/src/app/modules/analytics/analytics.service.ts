@@ -14,7 +14,19 @@ const STOP_WORDS = new Set([
   "same", "so", "than", "too", "very", "just", "as", "up", "out", "if",
 ]);
 
-const getOverview = async (token: ITokenPayload) => {
+const getOverview = async (token: ITokenPayload | null) => {
+
+  if (!token?._id) {
+    return {
+      totalStories: 0,
+      totalWords: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      totalLikes: 0,
+      totalViews: 0,
+    };
+  }
+
   const userObjectId = new Types.ObjectId(token._id);
 
   const posts = await Post.find({ author: userObjectId }).lean() as Array<Record<string, any>>;
@@ -76,7 +88,10 @@ const getOverview = async (token: ITokenPayload) => {
   };
 };
 
-const getHeatmap = async (token: ITokenPayload) => {
+const getHeatmap = async (token: ITokenPayload | null) => {
+  if (!token?._id) {
+  return [];
+}
   const userObjectId = new Types.ObjectId(token._id);
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -97,7 +112,10 @@ const getHeatmap = async (token: ITokenPayload) => {
   return Object.entries(heatmap).map(([date, count]) => ({ date, count }));
 };
 
-const getGenreDistribution = async (token: ITokenPayload) => {
+const getGenreDistribution = async (token: ITokenPayload | null) => {
+if (!token?._id) {
+  return [];
+}
   const userObjectId = new Types.ObjectId(token._id);
 
   const result = await Post.aggregate([
@@ -112,7 +130,10 @@ const getGenreDistribution = async (token: ITokenPayload) => {
   return result.map((r) => ({ genre: r._id, count: r.count }));
 };
 
-const getWordCloud = async (token: ITokenPayload) => {
+const getWordCloud = async (token: ITokenPayload | null) => {
+  if (!token?._id) {
+  return [];
+}
   const userObjectId = new Types.ObjectId(token._id);
   const posts = await Post.find({ author: userObjectId })
     .select("content title")
