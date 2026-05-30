@@ -465,9 +465,20 @@ const StoriesComponent = () => {
     }
 
     if (getWordCount(data.prompt) < 10) {
-      toast.error(
-        "Please enter a prompt with at least 10 words to generate a story.",
-      );
+     toast.custom((t) => (
+  <div className="bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
+    <span>
+      Please enter a prompt with at least 10 words to generate a story.
+    </span>
+
+    <button
+      onClick={() => toast.dismiss(t.id)}
+      className="ml-2 text-white hover:text-gray-200 text-lg font-bold"
+    >
+      ×
+    </button>
+  </div>
+));
       return;
     }
     isGenerationInProgressRef.current = true;
@@ -995,7 +1006,24 @@ const StoriesComponent = () => {
         </div>
       )}
 
-      <Toaster position="top-right" reverseOrder={false} />
+    <Toaster
+  position="top-right"
+  reverseOrder={false}
+  gutter={8}
+  containerStyle={{
+    top: 20,
+    right: 20,
+    zIndex: 999999,
+  }}
+  toastOptions={{
+    duration: 4000,
+    style: {
+      background: "#1e293b",
+      color: "#fff",
+      pointerEvents: "auto",
+    },
+  }}
+/>
     </div>
   );
 };
