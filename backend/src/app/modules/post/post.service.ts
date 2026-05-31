@@ -68,22 +68,22 @@ const getPosts = async (
     { isDeleted: { $ne: true } },
   ];
 
- if (searchTerm) {
-  const safeSearchTerm = escapeRegex(
-    searchTerm.trim().slice(0, MAX_SEARCH_TERM_LENGTH)
-  );
+  if (searchTerm) {
+    const safeSearchTerm = escapeRegex(
+      searchTerm.trim().slice(0, MAX_SEARCH_TERM_LENGTH)
+    );
 
-  if (safeSearchTerm) {
-    andCondition.push({
-      $or: postSearchFields.map((field) => ({
-        [field]: {
-          $regex: safeSearchTerm,
-          $options: "i",
-        },
-      })),
-    });
+    if (safeSearchTerm) {
+      andCondition.push({
+        $or: postSearchFields.map((field) => ({
+          [field]: {
+            $regex: safeSearchTerm,
+            $options: "i",
+          },
+        })),
+      });
+    }
   }
-}
 
   if (trendingTopic) {
     andCondition.push({
@@ -215,8 +215,6 @@ const getLatestPosts = async () => {
   try {
     const res = await Post.find({ isDeleted: { $ne: true } })
       .sort({ createdAt: -1 })
-      .limit(3)
-      .populate("author", "name email createdAt")
       .limit(50)
       .populate("author", "name createdAt profile.bio")
       .populate({
@@ -240,8 +238,6 @@ const getFeaturedPosts = async () => {
       isDeleted: { $ne: true },
     })
       .sort({ createdAt: -1, updatedBy: -1 })
-      .limit(3)
-      .populate("author", "name email createdAt")
       .limit(10)
       .populate("author", "name createdAt profile.bio")
       .populate({
@@ -288,8 +284,7 @@ const getSinglePost = async (id: string) => {
   return postById;
 };
 
-  const getPostsByTag = async (tag: string, excludeId?: string) => {
-
+const getPostsByTag = async (tag: string, excludeId?: string) => {
   if (!tag) {
     return [];
   }
@@ -301,8 +296,6 @@ const getSinglePost = async (id: string) => {
   }
 
   const result = await Post.find(query)
-    .limit(3)
-    .populate("author", "name email createdAt")
     .limit(2)
     .populate("author", "name createdAt profile.bio")
     .populate({
@@ -322,10 +315,9 @@ const toggleBookmark = async (postId: string, token: ITokenPayload) => {
 
   const postExists = await Post.exists({ _id: postId, isDeleted: { $ne: true } });
   if (!postExists) {
-  const post = await Post.findOne({ _id: postId, isDeleted: { $ne: true } });
-  if (!post) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
   }
+  
   // Check bookmark status atomically via a DB query instead of loading the full document
   const isBookmarked = await Post.exists({ _id: postId, bookmarks: user._id });
 
@@ -344,7 +336,7 @@ const toggleBookmark = async (postId: string, token: ITokenPayload) => {
     );
     return { message: "Bookmark added", bookmarked: true };
   }
-}
+};
 
 const updatePost = async (
   postId: string,
@@ -440,11 +432,6 @@ const remixStory = async (postId: string, prompt: string, token: ITokenPayload) 
     throw new ApiError(httpStatus.NOT_FOUND, "Original story post not found!");
   }
 
-  // Enforces data consistency by decrementing/reserving 1 credit balance mapping
-  // If your project uses an external service class call, invoke it here:
-  // await QuotaService.reserveUserQuota(user._id, 1);
-  
-  // Place your real AI model generation text manipulation calls here
   const remixedContent = `[AI Remixed Version based on prompt: "${prompt}"]\n\n${originalPost.content}`;
 
   const res = await Post.create({
@@ -474,10 +461,6 @@ const translateStory = async (postId: string, language: string, token: ITokenPay
     throw new ApiError(httpStatus.NOT_FOUND, "Original story post not found!");
   }
 
-  // Decrement/Reserve quota allocation block
-  // await QuotaService.reserveUserQuota(user._id, 1);
-
-  // Place your real language model translation core handler services here
   const translatedContent = `[Translated to ${language}]\n\n${originalPost.content}`;
 
   const res = await Post.create({
@@ -508,10 +491,6 @@ export const PostService = {
   toggleBookmark,
   updatePost,
   deletePost,
-};
-<<<<<<< HEAD
-=======
   remixStory,       // Exposed service for AI story variations
   translateStory,   // Exposed service for localized modifications
 };
->>>>>>> a74d6c8b0a91cb74787795bb33406909731c3b77

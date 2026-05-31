@@ -1,25 +1,19 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { getShortenedText, ITopicData, topicsData, getWordCount, SELECTED_TOPIC_CLASSES } from "./stories.utils";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useCreatePostMutation, useDeletePostMutation } from "../../redux/apis/post.api";
 import { useGetProfileInfoQuery } from "../../redux/apis/user.api";
 import jsPDF from "jspdf";
 import StoryWorldMap from "../story-map/StoryWorldMap";
-import BookmarkButton from "../BookmarkButton";
 import logo from "../../assets/logoNew.png";
 import StoryGeneratingAnimation from "../loading/story-generating-animation.component";
-import AudioPlayer, { type AudioPlayerHandle, type NarrationPlaybackState } from "../AudioPlayer";
-import { useLocation } from "react-router-dom";
+import { type AudioPlayerHandle, type NarrationPlaybackState } from "../AudioPlayer";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setStory } from "../../redux/slices/storySlice";
-import ContinueStoryButton from "../story/ContinueStoryButton";
 import { ErrorToast } from "../ErrorToast";
 import { useApiError } from "../../hooks/useApiError";
-import StoryTradingCard from "../cards/StoryTradingCard";
-import CardCollection from "../cards/CardCollection";
-import StoryCoverImage from "./StoryCoverImage";
-
-ImageFallback
+import ImageFallback from "../ImageFallback";
 import {
   useGenerateAlternateEndingsMutation,
   useGenerateFreeAlternateEndingsMutation,
@@ -65,7 +59,7 @@ const GENRE_THEMES: Record<string, { gradient: string; accent: string; icon: str
   "sci-fi":    { gradient: "135deg, #0f2027 0%, #203a43 50%, #2c5364 100%", accent: "#22d3ee", icon: "◇" },
   comedy:      { gradient: "135deg, #fddb92 0%, #d1fdff 50%, #f5af19 100%", accent: "#f59e0b", icon: "◉" },
   drama:       { gradient: "135deg, #8e2de2 0%, #4a00e0 50%, #3b82f6 100%", accent: "#a78bfa", icon: "✧" },
-  historical: { gradient: "135deg, #b79891 0%, #94716b 50%, #6b4226 100%", accent: "#d4a574", icon: "⬡" },
+  historical:  { gradient: "135deg, #b79891 0%, #94716b 50%, #6b4226 100%", accent: "#d4a574", icon: "⬡" },
   default:     { gradient: "135deg, #667eea 0%, #764ba2 50%, #4facfe 100%", accent: "#a78bfa", icon: "✦" },
 };
 
@@ -89,7 +83,7 @@ interface StoryCoverImageProps {
   style?: React.CSSProperties;
 }
 
-const StoryCoverImage: React.FC<StoryCoverImageProps> = ({
+export const StoryCoverImage: React.FC<StoryCoverImageProps> = ({
   title = "",
   tag = "default",
   size = "full",
@@ -226,9 +220,7 @@ const StoryCoverImage: React.FC<StoryCoverImageProps> = ({
 };
 
 // ─── Component Type Definitions ─────────────────────────────────────────────
-// ─── Main Component ─────────────────────────────────────────────────────────
 
-import ImageFallback from "../ImageFallback";
 export interface IStories {
   uuid: string;
   title: string;
@@ -236,12 +228,18 @@ export interface IStories {
   tag: string;
   imageURL: string;
   language?: string;
-import React from "react";
-import { Post } from "../../models/post";
-import { useNavigate } from "react-router-dom";
+}
+
+interface StoriesComponentProps {
+  stories: IStories[];
+  isLogin: boolean;
+  setStories: React.Dispatch<React.SetStateAction<IStories[]>> | ((stories: IStories[]) => void);
+  isLoading: boolean;
+  onPublishSuccess?: () => void;
+}
 
 interface IRelatedStoriesComponentProps {
-  posts: Post[],
+  posts: any[];
   currentPostId: string;
 }
 
@@ -267,6 +265,33 @@ const buildSentenceSegments = (content: string): StorySentenceSegment[] => {
     wordCursor += wordsInSentence;
   });
   return segments;
+};
+
+// ─── Related Stories Sub-Component ─────────────────────────────────────────
+
+export const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
+  posts,
+  currentPostId,
+}) => {
+  const navigate = useNavigate();
+  const filteredPosts = posts.filter((post) => post._id !== currentPostId);
+
+  return (
+    <div className="mt-8">
+      <h4 className="text-lg font-bold text-slate-200 mb-4">Related Content</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {filteredPosts.map((post) => (
+          <div 
+            key={post._id} 
+            onClick={() => navigate(`/stories/${post._id}`)}
+            className="p-4 bg-slate-700/40 rounded-xl border border-slate-600/30 cursor-pointer hover:bg-slate-700/60 transition-colors"
+          >
+            <p className="text-sm font-semibold text-white truncate">{post.title}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 // ─── Main View Component ────────────────────────────────────────────────────
@@ -416,7 +441,7 @@ export const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
       if (hasSavedSessionRef.current) return;
       if (isSavingRef.current) return;
       isSavingRef.current = true;
-      const post: IPost = { ...selectedStory, topic: selectTopics, isPublished: false };
+      const post: any = { ...selectedStory, topic: selectTopics, isPublished: false };
       try {
         const result = await createPost(post).unwrap();
         if (result && result.data && result.data._id) savedPostIdRef.current = result.data._id;
@@ -434,29 +459,6 @@ export const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   }, [selectedStory, selectedStory?.content, isLogin, selectTopics, createPost]);
 
   const handelStorySelection = (story: IStories) => { setSelectedStory(story); };
-
-  const handleTopicClick = (index: number) => {
-    setTopics((currentTopics) =>
-      currentTopics.map((topic, topicIndex) =>
-        topicIndex === index ? { ...topic, selected: !topic.selected } : topic
-      )
-    );
-  };
-
-  const handleAddTopic = () => {
-    const title = newTopicTitle.trim();
-    if (!title) { toast.error("Please enter a topic."); return; }
-    const normalizedTitle = title.startsWith("#") ? title : `#${title}`;
-    const topicExists = topics.some((topic) => topic.title.toLowerCase() === normalizedTitle.toLowerCase());
-    if (topicExists) { toast.error("This topic already exists."); return; }
-    setTopics((currentTopics) => [...currentTopics, { title: normalizedTitle, className: SELECTED_TOPIC_CLASSES, color: SELECTED_TOPIC_CLASSES, selected: true }]);
-    setNewTopicTitle("");
-  };
-
-  const handleRemoveTopic = (index: number) => {
-    if (topics.length <= 2) { toast.error("At least 2 topics are required."); return; }
-    setTopics((currentTopics) => currentTopics.filter((_, topicIndex) => topicIndex !== index));
-  };
 
   const handleCopyStory = async () => {
     if (selectedStory?.content) {
@@ -561,7 +563,7 @@ export const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
       toast.dismiss(toastId);
       toast.success("Premium PDF downloaded!");
     } catch (error) {
-      console.error(error); toast.dismiss(toastId); toast.error("Failed to export PDF.");
+      console.error(error); doc.save(`story.pdf`); toast.dismiss(toastId); toast.error("Failed to export PDF.");
     }
   };
 
@@ -584,26 +586,6 @@ export const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
       toast.success("Markdown downloaded!");
     } catch (error) { console.error(error); toast.error("Failed to export Markdown."); }
   };
-
-  const handelPublishStory = async () => {
-    if (!isLogin) { toast.error("Please login to publish the story."); return; }
-    if (!selectedStory) { toast.error("No story available. Please generate a story first."); return; }
-    if (selectTopics.length < 2) { toast.error("Please select at least 2 topics."); return; }
-    const post: IPost = { ...selectedStory, topic: selectTopics, isPublished: true };
-    setLoading(true);
-    try {
-      if (savedPostIdRef.current) {
-        try { await deletePost(savedPostIdRef.current).unwrap(); }
-        catch (deleteError) { console.warn("Failed to delete draft:", deleteError); }
-      }
-      const result = await createPost(post).unwrap();
-      if (result) { toast.success("Story published successfully!"); setStories([]); setSelectedStory(null); onPublishSuccess?.(); }
-    } catch { toast.error("Something went wrong. Please try again."); }
-    finally { setLoading(false); }
-  };
-
-  const calculateReadingTime = (content: string): number => Math.max(1, Math.ceil(getWordCount(content) / 200));
-  const isNarrationActive = narrationState !== "idle";
 
   if (isLoading) {
     return (
@@ -642,26 +624,6 @@ export const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in-up">
-        {/* Left main grid context column */}
-const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
-  posts,currentPostId,
-}) => {
-  const navigate = useNavigate();
-  const filteredPosts=posts.filter((post)=>post._id!==currentPostId)
-  return (
-    <div className="mt-16 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto pb-10">
-      <style>
-        {`
-          @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
-          }
-        `}
-      </style>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in-up">
         <div className="col-span-1 lg:col-span-8 flex flex-col">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div>
@@ -681,25 +643,23 @@ const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
             {/* Story choosing thumbnails selection tray */}
             <div className="flex justify-start sm:justify-end">
               <div className="flex -space-x-5">
-                {stories && stories.length > 0 && (
-                  stories.map((story) => (
-                    <button
-                      key={story.uuid}
-                      className={`relative w-16 h-16 rounded-full border-2 ${
-                        selectedStory?.uuid === story.uuid
-                          ? "border-blue-500 scale-110"
-                          : "border-white"
-                      } hover:scale-110 transition-transform duration-200 focus:outline-none`}
-                      onClick={() => handelStorySelection(story)}
-                    >
-                      <ImageFallback
-                        src={story.imageURL}
-                        alt={story.title}
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    </button>
-                  ))
-                )}
+                {stories.map((story) => (
+                  <button
+                    key={story.uuid}
+                    className={`relative w-16 h-16 rounded-full border-2 ${
+                      selectedStory?.uuid === story.uuid
+                        ? "border-blue-500 scale-110"
+                        : "border-white"
+                    } hover:scale-110 transition-transform duration-200 focus:outline-none`}
+                    onClick={() => handelStorySelection(story)}
+                  >
+                    <ImageFallback
+                      src={story.imageURL}
+                      alt={story.title}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -738,333 +698,47 @@ const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
                 >
                   ⬇️ Export Markdown
                 </button>
-                <button type="button" className="rounded-lg px-4 py-2 bg-violet-700 text-slate-200 font-semibold cursor-pointer hover:bg-violet-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => setShowWorldMap(true)} disabled={!selectedStory}>
-                  🗺️ World Map
-                </button>
-                <button type="button" className="rounded-lg px-4 py-2 bg-fuchsia-700 text-slate-200 font-semibold cursor-pointer hover:bg-fuchsia-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => setShowRemix(true)} disabled={!selectedStory}>
-                  🔀 Remix
-                </button>
-                <button type="button" className="rounded-lg px-4 py-2 bg-emerald-700 text-slate-200 font-semibold cursor-pointer hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => setShowTranslator(true)} disabled={!selectedStory}>
-                  🌍 Translate
-                <button
-                  type="button"
-                  className="rounded-lg px-4 py-2 bg-violet-700 text-slate-200 font-semibold cursor-pointer hover:bg-violet-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => setShowWorldMap(true)}
+                <button 
+                  type="button" 
+                  className="rounded-lg px-4 py-2 bg-violet-700 text-slate-200 font-semibold cursor-pointer hover:bg-violet-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                  onClick={() => setShowWorldMap(true)} 
                   disabled={!selectedStory}
                 >
                   🗺️ World Map
                 </button>
-                <button
-                  type="button"
-                  id="publish-story-btn"
-                  className={`rounded-lg px-5 py-2 font-semibold flex items-center space-x-2 cursor-pointer bg-blue-600 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    loading ? "" : "hover:bg-blue-500 hover:shadow-lg active:scale-95"
-                  }`}
-                  onClick={handelPublishStory}
-                  disabled={loading || !selectedStory}
+                <button 
+                  type="button" 
+                  className="rounded-lg px-4 py-2 bg-fuchsia-700 text-slate-200 font-semibold cursor-pointer hover:bg-fuchsia-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                  onClick={() => setShowRemix(true)} 
+                  disabled={!selectedStory}
                 >
-                  {loading ? "Publishing..." : "Publish"}
+                  🔀 Remix
+                </button>
+                <button 
+                  type="button" 
+                  className="rounded-lg px-4 py-2 bg-emerald-700 text-slate-200 font-semibold cursor-pointer hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                  onClick={() => setShowTranslator(true)} 
+                  disabled={!selectedStory}
+                >
+                  🌍 Translate
                 </button>
               </div>
             </div>
-            <div id="story-content" className="prose prose-invert max-w-none text-slate-300 leading-relaxed tracking-wide relative z-10">
-              <p className="break-words whitespace-pre-wrap">
-                {sentenceSegments.length > 0 ? (
-                  sentenceSegments.map((segment: StorySentenceSegment) => {
-                    const isActiveSentence =
-                      isNarrationActive &&
-                      narrationWordIndex >= segment.startWordIndex &&
-                      narrationWordIndex <= segment.endWordIndex;
 
-                    return (
-                      <span
-                        key={segment.id}
-                        className={
-                          isActiveSentence
-                            ? "rounded-md bg-indigo-500/20 px-0.5 py-0.5 text-indigo-100 ring-1 ring-indigo-400/30"
-                            : undefined
-                        }
-                      >
-                        {segment.text}
-                      </span>
-                    );
-                  })
-                ) : (
-                  selectedStory.content
-                )}
-              </p>
+            {/* Render Story Content text */}
+            <div className="prose prose-invert max-w-none text-slate-300 space-y-4 whitespace-pre-line">
+              {selectedStory.content}
             </div>
-
-            <div className="relative z-10 mt-6">
-              <AudioPlayer
-                ref={audioPlayerRef}
-                text={selectedStory.content}
-                title={selectedStory.title}
-                onWordIndexChange={setNarrationWordIndex}
-                onPlaybackStateChange={setNarrationState}
-    <div className="grid grid-cols-2 gap-6">
-      {filteredPosts.length > 0 ? (
-        filteredPosts.map((post: Post) => (
-          <div
-            onClick={() => navigate(`/post/${post._id}`)}
-            key={post._id}
-            className="cursor-pointer bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 overflow-hidden group flex flex-col h-full"
-          >
-            <div className="relative overflow-hidden">
-              <img
-                src={post.imageURL}
-                alt="Related Story"
-                className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60 pointer-events-none"></div>
-            </div>
-
-            {selectedStory.enhancedPrompt && (
-              <div className="mb-6 p-4 bg-indigo-900/30 border border-indigo-700/50 rounded-xl relative z-10">
-                <h4 className="text-sm font-semibold text-indigo-300 mb-2 flex items-center gap-2">
-                  <i className="fas fa-wand-magic-sparkles"></i> AI Enhanced Prompt
-                </h4>
-                <p className="text-slate-300 text-sm italic break-words whitespace-pre-wrap">{selectedStory.enhancedPrompt}</p>
-              </div>
-            )}
-
-            <div id="story-content" className="prose prose-invert max-w-none text-slate-300 leading-relaxed tracking-wide relative z-10">
-              <p className="break-words whitespace-pre-wrap">
-                {sentenceSegments.length > 0 ? (
-                  sentenceSegments.map((segment: StorySentenceSegment) => {
-                    const isActiveSentence = isNarrationActive && narrationWordIndex >= segment.startWordIndex && narrationWordIndex <= segment.endWordIndex;
-                    
-                    // Split the sentence text into word tokens, preserving whitespace
-                    const rawParts = segment.text.split(/(\s+)/);
-                    let wordOffset = 0;
-
-                    return (
-                      <span
-                        key={segment.id}
-                        className={isActiveSentence ? "transition-colors duration-300 text-slate-100" : undefined}
-                      >
-                        {rawParts.map((part, partIdx) => {
-                          if (part === "") return null;
-                          if (/^\s+$/.test(part)) {
-                            return part;
-                          }
-
-                          const absoluteWordIndex = segment.startWordIndex + wordOffset;
-                          wordOffset++;
-
-                          const isActiveWord = isNarrationActive && narrationWordIndex === absoluteWordIndex;
-
-                          if (isActiveWord) {
-                            return (
-                              <span
-                                key={partIdx}
-                                className="bg-indigo-500/20 text-indigo-300 rounded px-0.5 transition-all duration-150"
-                              >
-                                {part}
-                              </span>
-                            );
-                          }
-
-                          return (
-                            <span key={partIdx}>
-                              {part}
-                            </span>
-                          );
-                        })}
-                      </span>
-                    );
-                  })
-                ) : selectedStory.content}
-              </p>
-            </div>
-
-            <div className="relative z-10 mt-6">
-              <AudioPlayer ref={audioPlayerRef} text={selectedStory.content} title={selectedStory.title} onWordIndexChange={setNarrationWordIndex} onPlaybackStateChange={setNarrationState} />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 relative z-10">
-              <ContinueStoryButton />
-              <button
-                type="button"
-                className="w-full rounded-xl py-3.5 px-5 font-bold transition-all duration-200 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-lg shadow-orange-950/20 active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
-                onClick={handleGenerateAlternateEndings}
-                disabled={isGeneratingEndings}
-              >
-                {isGeneratingEndings ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Generating New Endings...
-                  </>
-                ) : (
-                  <>✨ Generate Alternate Endings</>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Alternative Endings Tab Selection Overlay Panels */}
-          {endingsCache[selectedStory.uuid] && endingsCache[selectedStory.uuid].length > 0 && (
-            <div className="mt-8 bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 shadow-xl animate-fade-in-up">
-              <div className="flex items-center justify-between border-b border-slate-700/60 pb-4 mb-4">
-                <h3 className="text-lg font-bold text-slate-200 flex items-center gap-2">
-                  🔮 Choose Alternate Paths
-                </h3>
-                <button
-                  type="button"
-                  className="text-xs font-semibold text-rose-400 hover:text-rose-300 underline underline-offset-4 bg-none border-none cursor-pointer"
-                  onClick={handleResetEnding}
-                >
-                  Reset to Original Story
-                </button>
-              </div>
-
-              <div className="flex border-b border-slate-700/40 gap-2 mb-4 overflow-x-auto pb-1">
-                {endingsCache[selectedStory.uuid].map((item) => (
-                  <button
-                    key={item.style}
-                    type="button"
-                    className={`px-4 py-2 text-sm font-medium rounded-t-xl border-b-2 transition-all whitespace-nowrap ${
-                      activeEndingTab === item.style
-                        ? "text-blue-400 border-blue-500 bg-blue-500/10"
-                        : "text-slate-400 border-transparent hover:text-slate-300"
-                    }`}
-                    onClick={() => setActiveEndingTab(item.style)}
-                  >
-                    {item.style}
-                  </button>
-                ))}
-              </div>
-
-              {endingsCache[selectedStory.uuid].map((item) => {
-                if (activeEndingTab !== item.style) return null;
-                return (
-                  <div key={item.style} className="space-y-4">
-                    <div className="p-4 bg-slate-900/40 rounded-xl border border-slate-700/30">
-                      <h4 className="text-sm font-semibold text-amber-400 mb-1">Ending Highlight:</h4>
-                      <p className="text-slate-300 text-sm italic whitespace-pre-wrap">{item.ending}</p>
-                    </div>
-                    <button
-                      type="button"
-                      className="rounded-lg px-4 py-2.5 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-colors"
-                      onClick={() => handleApplyEnding(item)}
-                    >
-                      Apply This Path to Story
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Topics selection metadata footer panels layout wrapper */}
-          <div className="mt-7">
-            <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-lg font-semibold text-slate-200 mb-4">Select Story Topics</h3>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {topics.map((topic, index) => (
-                  <button
-                    key={topic.title}
-                    type="button"
-                    onClick={() => handleTopicClick(index)}
-                    className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-150 ${
-                      topic.selected
-                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-950/40"
-                        : "bg-slate-700/50 text-slate-300 hover:bg-slate-700"
-                    }`}
-                  >
-                    {topic.title}
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Add custom topic (e.g. sci-fi)"
-                  value={newTopicTitle}
-                  onChange={(e) => setNewTopicTitle(e.target.value)}
-                  className="flex-1 px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-slate-200 text-sm focus:outline-none focus:border-indigo-500"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddTopic}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg transition-colors"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right metadata panel display board */}
-        <div className="col-span-1 lg:col-span-4 space-y-6">
-          <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 shadow-xl text-center">
-            <div className="w-20 h-20 mx-auto bg-indigo-600/10 rounded-full flex items-center justify-center text-indigo-400 text-2xl mb-3">
-              ⏱️
-                ) : (
-                  (() => {
-                    const rawParts = selectedStory.content.split(/(\s+)/);
-                    let wordOffset = 0;
-                    return rawParts.map((part, partIdx) => {
-                      if (part === "") return null;
-                      if (/^\s+$/.test(part)) {
-                        return part;
-                      }
-
-                      const absoluteWordIndex = wordOffset;
-                      wordOffset++;
-
-                      const isActiveWord = isNarrationActive && narrationWordIndex === absoluteWordIndex;
-
-                      if (isActiveWord) {
-                        return (
-                          <span
-                            key={partIdx}
-                            className="bg-indigo-500/20 text-indigo-300 rounded px-0.5 transition-all duration-150"
-                          >
-                            {part}
-                          </span>
-                        );
-                      }
-
-                      return (
-                        <span key={partIdx}>
-                          {part}
-                        </span>
-                      );
-                    });
-                  })()
-                )}
-              </p>
-            </div>
-            <h4 className="text-slate-400 text-xs font-semibold tracking-wider uppercase mb-1">Reading Overhead</h4>
-            <p className="text-2xl font-bold text-slate-200">
-              {calculateReadingTime(selectedStory.content)} {calculateReadingTime(selectedStory.content) === 1 ? "min" : "mins"}
-            </p>
-            <p className="text-xs text-slate-400 mt-1">{getWordCount(selectedStory.content)} words total</p>
           </div>
         </div>
       </div>
 
-      {/* Modals Mounting Portal Blocks */}
-      {showWorldMap && <StoryWorldMap story={selectedStory} onClose={() => setShowWorldMap(false)} />}
-      {showRemix && <StoryRemix story={selectedStory} onClose={() => setShowRemix(false)} />}
-      {showTranslator && <StoryTranslator story={selectedStory} onClose={() => setShowTranslator(false)} />}
-      
-      <Toaster position="bottom-right" reverseOrder={false} />
-    </div>
-  );
-};
-export default StoriesViewComponent;
-        ))
-      ) : (
-        <p className="text-center text-slate-500 col-span-2 py-8">No related stories found.</p>
+      {showWorldMap && (
+        <StoryWorldMap 
+          storyContent={selectedStory.content} 
+          onClose={() => setShowWorldMap(false)} 
+        />
       )}
     </div>
   );
 };
-
-export default RelatedStoriesComponent;
