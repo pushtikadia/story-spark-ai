@@ -10,11 +10,21 @@ import logo from "../../assets/logoNew.png";
 import StoryGeneratingAnimation from "../loading/story-generating-animation.component";
 import AudioPlayer, { type AudioPlayerHandle, type NarrationPlaybackState } from "../AudioPlayer";
 import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setStory } from "../../redux/slices/storySlice";
+import ContinueStoryButton from "../story/ContinueStoryButton";
+import StoryTradingCard from "../cards/StoryTradingCard";
+import CardCollection from "../cards/CardCollection";
+import StoryCoverImage from "./StoryCoverImage";
+
 ImageFallback
 import {
   useGenerateAlternateEndingsMutation,
   useGenerateFreeAlternateEndingsMutation,
 } from "../../redux/apis/ai.model.api";
+
+// ─── Main Component ─────────────────────────────────────────────────────────
+
 import ImageFallback from "../ImageFallback";
 export interface IStories {
   uuid: string;
