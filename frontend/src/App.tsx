@@ -1,15 +1,13 @@
 import React from "react";
+
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router-dom";
 
-// iii. Services & helpers
 import { USER_ROLE } from "./constants/role";
 import { getUserInfo } from "./services/auth.service";
 
-// v. Layouts & Pages
-import DashboardLayout from "./components/dashboard/dashboard_layout.component";
 import RootLayout from "./components/layout/root_layout.component";
 import LoadingAnimation from "./components/loading/loading.component";
-import SimpleProtectedRoute from './components/ProtectedRoute';
+import SimpleProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import ScrollToTop from "./components/ScrollToTop";
 import MagicCursorComponent from "./components/magic-cursor/magic_cursor.component";
@@ -17,6 +15,7 @@ import MagicCursorComponent from "./components/magic-cursor/magic_cursor.compone
 import HeroSectionComponent from "./components/hero/hero_section.component";
 import HomeComponent from "./components/home/home.component";
 import NotFoundComponent from "./components/not-found.component";
+import DashboardLayout from "./components/dashboard/dashboard_layout.component";
 
 // Lazy-loaded page components
 const AboutUsComponent = React.lazy(() => import("./components/footer/about-us.tsx"));
@@ -50,6 +49,7 @@ const Contact = React.lazy(() => import("./components/contactus/contactus"));
 const GuidelinesComponent = React.lazy(() => import("./components/footer/guidelines.tsx"));
 const ContributorsComponent = React.lazy(() => import("./components/footer/contributors"));
 const Terms = React.lazy(() => import("./components/footer/terms.tsx"));
+const CookiePolicy = React.lazy(() => import("./components/footer/cookie-policy.tsx"));
 const ExploreComponent = React.lazy(() => import("./components/post/post.component"));
 const CommunityComponent = React.lazy(() => import("./components/community/community.component"));
 const EmailValidationComponent = React.lazy(() => import("./components/email_validation/email.validation.component"));
@@ -76,9 +76,6 @@ const ProtectedRoute = ({ allowedRoles, element }: ProtectedRouteProps) => {
   return element ? element : <Outlet />;
 };
 
-// =========================================================================
-// 2. CENTRAL ROUTER MATRIX (Initialized exactly once in the global scope)
-// =========================================================================
 const ALL_ROLES = [USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN, USER_ROLE.WRITER, USER_ROLE.USER];
 const ELEVATED_ADMIN_ROLES = [USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN];
 
@@ -107,19 +104,19 @@ const router = createBrowserRouter([
       { path: "forgot-password", element: <ForgotPasswordComponent /> },
       { path: "pricing", element: <PricingComponent /> },
       { path: "post/:id", element: <PostDetailsComponent /> },
-      { path: "help", element: <HelpCenterComponent /> },
       { path: "contact-us", element: <Contact /> },
       { path: "about-us", element: <AboutUsComponent /> },
       { path: "career", element: <CareerComponent /> },
       { path: "blog", element: <BlogComponent /> },
       { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "cookie-policy", element: <CookiePolicy /> },
       { path: "terms", element: <Terms /> },
       { path: "help-center", element: <HelpCenterComponent /> },
       { path: "guidelines", element: <GuidelinesComponent /> },
       { path: "contributors", element: <ContributorsComponent /> },
       { path: "report-bug", element: <ReportBug /> },
 
-      // Protected Sub-Tree running under the RootLayout context
+      // Protected routes (logged-in users)
       {
         element: <ProtectedRoute allowedRoles={ALL_ROLES} />,
         children: [
@@ -131,7 +128,7 @@ const router = createBrowserRouter([
         ],
       },
 
-      // 🆕 Story generation - Protected with token only (outside role-based routes)
+      // Story routes (token-protected)
       {
         path: "stories",
         element: (
@@ -171,31 +168,34 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/payment",
-    element: (
-      <React.Suspense fallback={<LoadingAnimation />}>
-        <PaymentComponent />
-      </React.Suspense>
-    ),
+    element: <ProtectedRoute allowedRoles={ALL_ROLES} />,
+    children: [
+      {
+        path: "/payment",
+        element: (
+          <React.Suspense fallback={<LoadingAnimation />}>
+            <PaymentComponent />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: "/collab",
+        element: (
+          <React.Suspense fallback={<LoadingAnimation />}>
+            <CollabHome />
+          </React.Suspense>
+        ),
+      },
+      {
+        path: "/collab/:roomId",
+        element: (
+          <React.Suspense fallback={<LoadingAnimation />}>
+            <CollabRoom />
+          </React.Suspense>
+        ),
+      },
+    ],
   },
-  {
-    path: "/collab",
-    element: (
-      <React.Suspense fallback={<LoadingAnimation />}>
-        <CollabHome />
-      </React.Suspense>
-    ),
-  },
-  {
-    path: "/collab/:roomId",
-    element: (
-      <React.Suspense fallback={<LoadingAnimation />}>
-        <CollabRoom />
-      </React.Suspense>
-    ),
-  },
-
-  // Administrative Dashboard Infrastructure Tree
   {
     path: "/dashboard",
     element: <ProtectedRoute allowedRoles={ALL_ROLES} />,
@@ -205,16 +205,18 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardComponent /> },
           { path: "profile", element: <ProfileComponent /> },
-          { path: "writers", element: <WriterApplicationComponent /> },
-          { path: "users", element: <UserComponent /> },
           {
-            element: <ProtectedRoute allowedRoles={[USER_ROLE.USER, USER_ROLE.WRITER]} />,
+            element: <ProtectedRoute allowedRoles={ELEVATED_ADMIN_ROLES} />,
+            children: [
+              { path: "writers", element: <WriterApplicationComponent /> },
+              { path: "users", element: <UserComponent /> },
+            ],
+          },
+          {
+            element: <ProtectedRoute allowedRoles={ALL_ROLES} />,
             children: [
               { path: "settings", element: <SettingComponent /> },
-              {
-                path: "published-stories",
-                element: <PublishedStoriesComponent />,
-              },
+              { path: "published-stories", element: <PublishedStoriesComponent /> },
             ],
           },
           {
@@ -231,9 +233,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-// =========================================================================
-// APP
-// =========================================================================
 function App() {
   return <RouterProvider router={router} />;
 }
