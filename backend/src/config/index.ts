@@ -19,11 +19,11 @@ export default {
   disable_logs: process.env.DISABLE_LOGS === "true" || process.env.VERCEL === "1",
   database_url: (() => {
     const url = process.env.DATABASE_URL?.trim();
-    // if (!url) {
-    //   throw new Error(
-    //     "DATABASE_URL environment variable is required. See backend/.env.example for setup instructions."
-    //   );
-    // }
+    if (!url) {
+      throw new Error(
+        "DATABASE_URL environment variable is required. See backend/.env.example for setup instructions."
+      );
+    }
     return url;
   })(),
   cors_origins: parseCorsOrigins(process.env.CORS_ORIGINS),
@@ -40,6 +40,8 @@ export default {
   },
   default_admin_password: process.env.DEFAULT_ADMIN_PASSWORD,
   openai_key: process.env.OPEN_AI_KEY,
+  image_generation_provider: process.env.IMAGE_GENERATION_PROVIDER,
+  image_generation_api_key: process.env.IMAGE_GENERATION_API_KEY,
   unsplash_key_api: process.env.UNSPLASH_KEY_API,
   unsplash_secret_key_api: process.env.UNSPLASH_KEY_API_SECRET,
   gemini_api_key: process.env.GEMINI_API_KEY,
@@ -48,6 +50,6 @@ export default {
   google_client_id: process.env.GOOGLE_CLIENT_ID,
   github: {
     token: process.env.GITHUB_TOKEN,
-    repo: process.env.GITHUB_REPO || "Arpita2919/story-spark-ai",
+    repo: process.env.GITHUB_REPO || "ronisarkarexe/story-spark-ai",
   },
 };
