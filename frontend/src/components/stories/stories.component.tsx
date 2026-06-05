@@ -46,7 +46,7 @@ const LANGUAGES = [
   { code: "bn", name: "Bengali" },
   { code: "ta", name: "Tamil" },
   { code: "te", name: "Telugu" },
-  { code: "mr", name: "Marathi" },
+  { code: "mr", name: "Marathi" }
 ];
 
 const GENRES = [
@@ -111,6 +111,17 @@ const GENRE_LABELS: Record<string, Record<GenreName, string>> = {
     Drama: "नाटक", Comedy: "विनोद", Horror: "भयकथा", Romance: "प्रेमकथा",
     "Sci-Fi": "विज्ञानकथा", Fantasy: "कल्पनारम्य", Mystery: "रहस्य", Adventure: "साहस",
   },
+  Kannada: {
+  Drama: "ನಾಟಕ",
+  Comedy: "ಹಾಸ್ಯ",
+  Horror: "ಭಯಾನಕ",
+  Romance: "ಪ್ರೇಮಕಥೆ",
+  "Sci-Fi": "ವೈಜ್ಞಾನಿಕ ಕಾಲ್ಪನಿಕ",
+  Fantasy: "ಕಲ್ಪನಾ ಕಥೆ",
+  Mystery: "ರಹಸ್ಯ",
+  Adventure: "ಸಾಹಸ",
+},
+
 };
 
 type UiText = {
@@ -320,30 +331,6 @@ const UI_TEXT: Record<string, UiText> = {
     shortcuts: "कीबोर्ड शॉर्टकट", openHelp: "मदत उघडा", closeHelp: "मदत बंद करा", focusPrompt: "प्रॉम्प्टवर लक्ष",
     generateStory: "कथा तयार करा", publishStory: "कथा प्रकाशित करा", close: "बंद करा", freeLimitReached: "मोफत मर्यादा पूर्ण",
     freeLimitMessage: "तुम्ही सर्व 3 मोफत कथा निर्मिती वापरल्या आहेत. पुढे सुरू ठेवण्यासाठी लॉग इन करा.", continueBrowsing: "ब्राउझिंग सुरू ठेवा", recentPrompts: "अलीकडील प्रॉम्प्ट", usePrompt: "वापरा", delete: "हटवा", clearAll: "सर्व मुडून टाका", noRecentPrompts: "अलीकडील प्रॉम्प्ट नाहीत",
-
-    back: "à°µà±†à°¨à±à°•à°•à±", freeAccess: "3 à°…à°­à±à°¯à°°à±à°¥à°¨à°²à°•à± à°‰à°šà°¿à°¤ à°ªà±à°°à°µà±‡à°¶à°‚", login: "à°²à°¾à°—à°¿à°¨à±", forMore: "à°šà±‡à°¸à°¿ à°®à°°à°¿à°¨à±à°¨à°¿ à°ªà±Šà°‚à°¦à°‚à°¡à°¿!",
-    perMonth: "à°¨à±†à°²à°•à±", upgrade: "à°…à°ªà±â€Œà°—à±à°°à±‡à°¡à±", monthlyRequests: "à°ˆ à°¨à±†à°² à°…à°­à±à°¯à°°à±à°¥à°¨à°²à±", totalPosts: "à°®à±Šà°¤à±à°¤à°‚ à°ªà±‹à°¸à±à°Ÿà±à°²à±",
-    titleStart: "à°®à±€ à°†à°²à±‹à°šà°¨à°²à°¨à±", titleAccent: "à°…à°¦à±à°­à±à°¤ à°•à°¥à°²à±à°—à°¾ à°®à°¾à°°à±à°šà°‚à°¡à°¿!", length: "à°ªà±Šà°¡à°µà±", language: "à°­à°¾à°·",
-    short: "à°šà°¿à°¨à±à°¨à°¦à°¿", medium: "à°®à°§à±à°¯à°¸à±à°¥à°‚", long: "à°ªà±Šà°¡à°µà±ˆà°¨à°¦à°¿", promptPlaceholder: "à°ªà±à°°à°¤à°¿ à°—à±Šà°ªà±à°ª à°•à°¥ à°’à°• à°†à°²à±‹à°šà°¨à°¤à±‹ à°®à±Šà°¦à°²à°µà±à°¤à±à°‚à°¦à°¿. à°®à±€à°¦à°¿ à°à°®à°¿à°Ÿà°¿?",
-    keyboardTip: "à°•à±€à°¬à±‹à°°à±à°¡à± à°šà°¿à°Ÿà±à°•à°¾:", press: "à°¨à±Šà°•à±à°•à°‚à°¡à°¿", toGenerate: "à°°à±‚à°ªà±Šà°‚à°¦à°¿à°‚à°šà°¡à°¾à°¨à°¿à°•à°¿", alsoWorks: "à°•à±‚à°¡à°¾ à°ªà°¨à°¿à°šà±‡à°¸à±à°¤à±à°‚à°¦à°¿", forNewLine: "à°•à±Šà°¤à±à°¤ à°²à±ˆà°¨à± à°•à±‹à°¸à°‚",
-    generating: "à°°à±‚à°ªà±Šà°‚à°¦à°¿à°¸à±à°¤à±‹à°‚à°¦à°¿...", generate: "à°°à±‚à°ªà±Šà°‚à°¦à°¿à°‚à°šà±", examples: "à°•à±Šà°¨à±à°¨à°¿ à°‰à°¦à°¾à°¹à°°à°£ à°ªà±à°°à°¾à°‚à°ªà±à°Ÿà±â€Œà°²à±:",
-    selectPrompt: "à°ªà±à°°à°¾à°‚à°ªà±à°Ÿà± à°Žà°‚à°šà±à°•à±‹à°‚à°¡à°¿", characterLimit: "à°…à°•à±à°·à°° à°ªà°°à°¿à°®à°¿à°¤à°¿ à°šà±‡à°°à°¿à°‚à°¦à°¿ - à°°à±‚à°ªà±Šà°‚à°¦à°¿à°‚à°ªà± à°¨à°¿à°²à°¿à°ªà°¿à°µà±‡à°¯à°¬à°¡à°¿à°‚à°¦à°¿", charactersRemaining: "à°…à°•à±à°·à°°à°¾à°²à± à°®à°¿à°—à°¿à°²à°¾à°¯à°¿",
-    shortcuts: "à°•à±€à°¬à±‹à°°à±à°¡à± à°¸à°¤à±à°µà°°à°®à°¾à°°à±à°—à°¾à°²à±", openHelp: "à°¸à°¹à°¾à°¯à°‚ à°¤à±†à°°à°µà°‚à°¡à°¿", closeHelp: "à°¸à°¹à°¾à°¯à°‚ à°®à±‚à°¸à°¿à°µà±‡à°¯à°‚à°¡à°¿", focusPrompt: "à°ªà±à°°à°¾à°‚à°ªà±à°Ÿà±â€Œà°ªà±ˆ à°¦à±ƒà°·à±à°Ÿà°¿",
-    generateStory: "à°•à°¥ à°°à±‚à°ªà±Šà°‚à°¦à°¿à°‚à°šà±", publishStory: "à°•à°¥ à°ªà±à°°à°šà±à°°à°¿à°‚à°šà±", close: "à°®à±‚à°¸à°¿à°µà±‡à°¯à°¿", freeLimitReached: "à°‰à°šà°¿à°¤ à°ªà°°à°¿à°®à°¿à°¤à°¿ à°šà±‡à°°à°¿à°‚à°¦à°¿",
-    freeLimitMessage: "à°®à±€à°°à± 3 à°‰à°šà°¿à°¤ à°•à°¥à°¾ à°°à±‚à°ªà±Šà°‚à°¦à°¿à°‚à°ªà±à°²à°¨à± à°‰à°ªà°¯à±‹à°—à°¿à°‚à°šà°¾à°°à±. à°•à±Šà°¨à°¸à°¾à°—à°¡à°¾à°¨à°¿à°•à°¿ à°²à°¾à°—à°¿à°¨à± à°šà±‡à°¯à°‚à°¡à°¿.", continueBrowsing: "à°¬à±à°°à±Œà°œà°¿à°‚à°—à± à°•à±Šà°¨à°¸à°¾à°—à°¿à°‚à°šà±", recentPrompts: "à°‡à°Ÿà±€à°µà°² à°ªà±à°°à°¾à°‚à°ªà±à°Ÿà±â€Œà°²à±", usePrompt: "à°‰à°ªà°¯à±‹à°—à°¿à°‚à°šà±", delete: "à°¤à±Šà°²à°—à°¿à°‚à°šà±", clearAll: "à°…à°¨à±à°¨à°¿à°‚à°Ÿà°¿à°¨à°¿ à°¤à±Šà°²à°—à°¿à°‚à°šà±", noRecentPrompts: "à°‡à°Ÿà±€à°µà°² à°ªà±à°°à°¾à°‚à°ªà±à°Ÿà±â€Œà°²à± à°²à±‡à°µà±",
-  },
-  Marathi: {
-    back: "à¤®à¤¾à¤—à¥‡", freeAccess: "3 à¤µà¤¿à¤¨à¤‚à¤¤à¥à¤¯à¤¾à¤‚à¤¸à¤¾à¤ à¥€ à¤®à¥‹à¤«à¤¤ à¤ªà¥à¤°à¤µà¥‡à¤¶", login: "à¤²à¥‰à¤— à¤‡à¤¨", forMore: "à¤•à¤°à¥‚à¤¨ à¤…à¤§à¤¿à¤• à¤®à¤¿à¤³à¤µà¤¾!",
-    perMonth: "à¤¦à¤° à¤®à¤¹à¤¿à¤¨à¤¾", upgrade: "à¤…à¤ªà¤—à¥à¤°à¥‡à¤¡", monthlyRequests: "à¤¯à¤¾ à¤®à¤¹à¤¿à¤¨à¥à¤¯à¤¾à¤¤à¥€à¤² à¤µà¤¿à¤¨à¤‚à¤¤à¥à¤¯à¤¾", totalPosts: "à¤à¤•à¥‚à¤£ à¤ªà¥‹à¤¸à¥à¤Ÿ",
-    titleStart: "à¤¤à¥à¤®à¤šà¥à¤¯à¤¾ à¤•à¤²à¥à¤ªà¤¨à¤¾ à¤¬à¤¦à¤²à¤¾", titleAccent: "à¤…à¤¦à¥à¤­à¥à¤¤ à¤•à¤¥à¤¾à¤‚à¤®à¤§à¥à¤¯à¥‡!", length: "à¤²à¤¾à¤‚à¤¬à¥€", language: "à¤­à¤¾à¤·à¤¾",
-    short: "à¤²à¤¹à¤¾à¤¨", medium: "à¤®à¤§à¥à¤¯à¤®", long: "à¤²à¤¾à¤‚à¤¬", promptPlaceholder: "à¤ªà¥à¤°à¤¤à¥à¤¯à¥‡à¤• à¤®à¤¹à¤¾à¤¨ à¤•à¤¥à¤¾ à¤à¤•à¤¾ à¤•à¤²à¥à¤ªà¤¨à¥‡à¤ªà¤¾à¤¸à¥‚à¤¨ à¤¸à¥à¤°à¥‚ à¤¹à¥‹à¤¤à¥‡. à¤¤à¥à¤®à¤šà¥€ à¤•à¤²à¥à¤ªà¤¨à¤¾ à¤•à¤¾à¤¯ à¤†à¤¹à¥‡?",
-    keyboardTip: "à¤•à¥€à¤¬à¥‹à¤°à¥à¤¡ à¤¸à¥‚à¤šà¤¨à¤¾:", press: "à¤¦à¤¾à¤¬à¤¾", toGenerate: "à¤¤à¤¯à¤¾à¤° à¤•à¤°à¤£à¥à¤¯à¤¾à¤¸à¤¾à¤ à¥€", alsoWorks: "à¤¹à¥‡à¤¹à¥€ à¤šà¤¾à¤²à¤¤à¥‡", forNewLine: "à¤¨à¤µà¥€à¤¨ à¤“à¤³à¥€à¤¸à¤¾à¤ à¥€",
-    generating: "à¤¤à¤¯à¤¾à¤° à¤¹à¥‹à¤¤ à¤†à¤¹à¥‡...", generate: "à¤¤à¤¯à¤¾à¤° à¤•à¤°à¤¾", examples: "à¤•à¤¾à¤¹à¥€ à¤‰à¤¦à¤¾à¤¹à¤°à¤£ à¤ªà¥à¤°à¥‰à¤®à¥à¤ªà¥à¤Ÿ:",
-    selectPrompt: "à¤ªà¥à¤°à¥‰à¤®à¥à¤ªà¥à¤Ÿ à¤¨à¤¿à¤µà¤¡à¤¾", characterLimit: "à¤…à¤•à¥à¤·à¤° à¤®à¤°à¥à¤¯à¤¾à¤¦à¤¾ à¤ªà¥‚à¤°à¥à¤£ - à¤¨à¤¿à¤°à¥à¤®à¤¿à¤¤à¥€ à¤¬à¤‚à¤¦ à¤†à¤¹à¥‡", charactersRemaining: "à¤…à¤•à¥à¤·à¤°à¥‡ à¤¬à¤¾à¤•à¥€",
-    shortcuts: "à¤•à¥€à¤¬à¥‹à¤°à¥à¤¡ à¤¶à¥‰à¤°à¥à¤Ÿà¤•à¤Ÿ", openHelp: "à¤®à¤¦à¤¤ à¤‰à¤˜à¤¡à¤¾", closeHelp: "à¤®à¤¦à¤¤ à¤¬à¤‚à¤¦ à¤•à¤°à¤¾", focusPrompt: "à¤ªà¥à¤°à¥‰à¤®à¥à¤ªà¥à¤Ÿà¤µà¤° à¤²à¤•à¥à¤·",
-    generateStory: "à¤•à¤¥à¤¾ à¤¤à¤¯à¤¾à¤° à¤•à¤°à¤¾", publishStory: "à¤•à¤¥à¤¾ à¤ªà¥à¤°à¤•à¤¾à¤¶à¤¿à¤¤ à¤•à¤°à¤¾", close: "à¤¬à¤‚à¤¦ à¤•à¤°à¤¾", freeLimitReached: "à¤®à¥‹à¤«à¤¤ à¤®à¤°à¥à¤¯à¤¾à¤¦à¤¾ à¤ªà¥‚à¤°à¥à¤£",
-    freeLimitMessage: "à¤¤à¥à¤®à¥à¤¹à¥€ à¤¸à¤°à¥à¤µ 3 à¤®à¥‹à¤«à¤¤ à¤•à¤¥à¤¾ à¤¨à¤¿à¤°à¥à¤®à¤¿à¤¤à¥€ à¤µà¤¾à¤ªà¤°à¤²à¥à¤¯à¤¾ à¤†à¤¹à¥‡à¤¤. à¤ªà¥à¤¢à¥‡ à¤¸à¥à¤°à¥‚ à¤ à¥‡à¤µà¤£à¥à¤¯à¤¾à¤¸à¤¾à¤ à¥€ à¤²à¥‰à¤— à¤‡à¤¨ à¤•à¤°à¤¾.", continueBrowsing: "à¤¬à¥à¤°à¤¾à¤‰à¤à¤¿à¤‚à¤— à¤¸à¥à¤°à¥‚ à¤ à¥‡à¤µà¤¾", recentPrompts: "à¤…à¤²à¥€à¤•à¤¡à¥€à¤² à¤ªà¥à¤°à¥‰à¤®à¥à¤ªà¥à¤Ÿ", usePrompt: "à¤µà¤¾à¤ªà¤°à¤¾", delete: "à¤¹à¤Ÿà¤µà¤¾", clearAll: "à¤¸à¤°à¥à¤µ à¤®à¥à¤¡à¥‚à¤¨ à¤Ÿà¤¾à¤•à¤¾", noRecentPrompts: "à¤…à¤²à¥€à¤•à¤¡à¥€à¤² à¤ªà¥à¤°à¥‰à¤®à¥à¤ªà¥à¤Ÿ à¤¨à¤¾à¤¹à¥€à¤¤",
-
   },
 };
 
@@ -429,9 +416,8 @@ const TonePicker: React.FC<TonePickerProps> = ({ selected, onChange }) => {
   );
 };
 
-// ---------------------------------------------------------------------------
-// Main StoriesComponent
-// ---------------------------------------------------------------------------
+import { useDebounce } from "../../hooks/useDebounce";
+
 const StoriesComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
 const storiesPerPage = 10;
@@ -469,10 +455,12 @@ const storiesPerPage = 10;
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchFilter, setSearchFilter] = useState<string>("all");
 
+  const debouncedSearchQuery = useDebounce(searchQuery, 350);
+
   const filteredStories = useMemo(() => {
-    if (!searchQuery.trim()) return stories;
+    if (!debouncedSearchQuery.trim()) return stories;
     
-    const query = searchQuery.toLowerCase();
+    const query = debouncedSearchQuery.toLowerCase();
     
     return stories.filter((story) => {
       switch (searchFilter) {
@@ -491,7 +479,7 @@ const storiesPerPage = 10;
           );
       }
     });
-  }, [stories, searchQuery, searchFilter]);
+  }, [stories, debouncedSearchQuery, searchFilter]);
   const indexOfLastStory = currentPage * storiesPerPage;
 const indexOfFirstStory = indexOfLastStory - storiesPerPage;
 
@@ -505,7 +493,7 @@ const totalPages = Math.ceil(
 );
 useEffect(() => {
   setCurrentPage(1);
-}, [searchQuery, searchFilter]);
+}, [debouncedSearchQuery, searchFilter]);
 
   const { data } = useGetProfileInfoQuery(undefined);
   const userRole = getUserInfo();
@@ -514,14 +502,11 @@ useEffect(() => {
   const [generateFreeModel] = useGenerateFreeModelMutation();
   const [selectedPrompt, setSelectedPrompt] = useState<string>("");
   const [showHelpModal, setShowHelpModal] = useState(false);
-  const [selectedGenre, setSelectedGenre] = useState<string>(
-  draft?.genre
-    ? (GENRES.find((g) => g.name === draft.genre || g.value === draft.genre)?.value ?? "🧙 Fantasy")
-    : "🧙 Fantasy",
-);
-  const [selectedLength, setSelectedLength] = useState<string>(draft?.length || "medium");
-  const [selectedTone, setSelectedTone] = useState<ToneLabel | "">(draft?.tone || "Dramatic");
-  const [textareaValue, setTextareaValue] = useState<string>(location.state?.prompt || draft?.prompt || "");
+  const [selectedGenre, setSelectedGenre] = useState<string>("");
+  const [selectedLength, setSelectedLength] = useState<string>("medium");
+  const [textareaValue, setTextareaValue] = useState<string>("");
+  const DRAFT_KEY = "storyspark_story_draft_v1";
+  const [draftStatus, setDraftStatus] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(draft?.language || "English");
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState<boolean>(false);
@@ -538,50 +523,15 @@ useEffect(() => {
     parseInt(localStorage.getItem("guestRequestCount") || "0", 10),
   );
   const [showLimitModal, setShowLimitModal] = useState<boolean>(false);
-  const [isRecentPromptsOpen, setIsRecentPromptsOpen] = useState<boolean>(false);
-  const { recentPrompts, addPrompt, removePrompt, clearAll } = useRecentPrompts();
-  
-  const text = UI_TEXT[selectedLanguage] ?? UI_TEXT.English;
-  const genreLabels = GENRE_LABELS[selectedLanguage] ?? GENRE_LABELS.English;
-
-
-  
-
-  const playSoundtrack = (genre: string) => {
-    const soundtrack = soundtrackMap[genre];
-    if (!soundtrack) return;
-
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-
-    const audio = new Audio(soundtrack);
-    audio.loop = true;
-    audio.volume = 0.3;
-    audio.play().catch((err) => {
-      console.log("Audio playback failed:", err);
-    });
-    audioRef.current = audio;
-  };
-
-
-
-  const activeGenerationRef = useRef<{ abort: () => void } | null>(null);
-  const isGenerationInProgressRef = useRef(false);
-  const [guestRequestCount, setGuestRequestCount] = useState<number>(() =>
-    parseInt(localStorage.getItem("guestRequestCount") || "0", 10)
-  );
-  const [showLimitModal, setShowLimitModal] = useState<boolean>(false);
-  const [isRecentPromptsOpen, setIsRecentPromptsOpen] = useState<boolean>(false);
-  const { recentPrompts, addPrompt, removePrompt, clearAll } = useRecentPrompts();
-  const text = UI_TEXT[selectedLanguage] ?? UI_TEXT.English;
-  const genreLabels = GENRE_LABELS[selectedLanguage] ?? GENRE_LABELS.English;
-
+  const [showRestorePrompt, setShowRestorePrompt] = useState(false);
+ 
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
+  
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -659,6 +609,42 @@ useEffect(() => {
     setValue("prompt", textareaValue);
   }, [textareaValue, setValue]);
 
+useEffect(() => {
+  const savedDraft = localStorage.getItem(DRAFT_KEY);
+
+  if (savedDraft && savedDraft.trim().length > 0) {
+    setShowRestorePrompt(true);
+  }
+}, []);
+
+
+const handleRestoreDraft = () => {
+  const savedDraft = localStorage.getItem(DRAFT_KEY);
+
+  if (savedDraft) {
+    setTextareaValue(savedDraft);
+    setDraftStatus("Draft Restored");
+  }
+
+  setShowRestorePrompt(false);
+};
+
+const handleDiscardDraft = () => {
+  localStorage.removeItem(DRAFT_KEY);
+  setShowRestorePrompt(false);
+};
+
+useEffect(() => {
+  if (!textareaValue.trim()) return;
+
+  const timer = setTimeout(() => {
+    localStorage.setItem(DRAFT_KEY, textareaValue);
+    setDraftStatus("Draft Saved");
+  }, 2000);
+
+  return () => clearTimeout(timer);
+}, [textareaValue]);
+
   useEffect(() => {
     return () => {
       activeGenerationRef.current?.abort();
@@ -695,13 +681,13 @@ useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
 
     try {
-      // 60-second client-side request timeout safeguard
+      // 55-second client-side request timeout safeguard (before Axios 60s timeout)
       timeoutId = setTimeout(() => {
         if (isGenerationInProgressRef.current) {
           toast.error("Story generation timed out. Please try again.");
           handleCancelGeneration(true);
         }
-      }, 60000);
+      }, 55000);
 
       const payload = {
 
@@ -731,10 +717,11 @@ useEffect(() => {
         setStories(res.data as IStories[]);
         setTextareaValue("");
         setSelectedPrompt("");
+        setTextareaValue("");
         setValue("prompt", "");
-        if (selectedGenre) {
-          playSoundtrack(selectedGenre);
-        }
+        localStorage.removeItem(DRAFT_KEY);
+        setDraftStatus("");
+        reset();
         if (!login) {
           const newCount = guestRequestCount + 1;
           setGuestRequestCount(newCount);
@@ -770,6 +757,9 @@ useEffect(() => {
     setTextareaValue("");
     setSelectedPrompt("");
     setValue("prompt", "");
+    localStorage.removeItem(DRAFT_KEY);
+    setDraftStatus("");
+
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -777,8 +767,11 @@ useEffect(() => {
 
   const handlePublishSuccess = () => {
     setTextareaValue("");
-    setSelectedPrompt("");
-    setValue("prompt", "");
+  setSelectedPrompt("");
+  setValue("prompt", "");
+
+  localStorage.removeItem(DRAFT_KEY);
+  setDraftStatus("");
     reset();
   };
 
@@ -1383,8 +1376,32 @@ useEffect(() => {
         </button>
       )}
     </div>
+    {showRestorePrompt && (
+  <div className="mb-3 p-3 rounded-lg border border-indigo-500/40 bg-indigo-500/10">
+    <p className="text-sm text-gray-300 mb-2">
+      📄 A previously saved draft was found. Restore it?
+    </p>
 
-    <div className="relative overflow-hidden">
+    <div className="flex gap-2">
+      <button
+        type="button"
+        onClick={handleRestoreDraft}
+        className="px-3 py-1 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm"
+      >
+        Restore
+      </button>
+
+      <button
+        type="button"
+        onClick={handleDiscardDraft}
+        className="px-3 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white text-sm"
+      >
+        Discard
+      </button>
+    </div>
+  </div>
+)}
+    <div className="relative">
       <textarea
   {...register("prompt")}
   ref={(el) => {
@@ -1401,7 +1418,9 @@ useEffect(() => {
         placeholder={text.promptPlaceholder}
         value={textareaValue}
         maxLength={MAX_PROMPT_LENGTH}
-        onChange={(e) => setTextareaValue(e.target.value)}
+        onChange={(e) => {
+          setTextareaValue(e.target.value);
+    }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -1412,7 +1431,76 @@ useEffect(() => {
         />
 
 
+      <div className="flex items-center justify-between mt-1 px-1">
+        {isOverLimit ? (
+          <p className="text-xs text-red-400 flex items-center gap-1">
+            <span>⚠</span> Character limit reached — generate is disabled
+          </p>
+        ) : isNearLimit ? (
+          <p className="text-xs text-yellow-400 flex items-center gap-1">
+            <span>⚠</span>{" "}
+            {MAX_PROMPT_LENGTH - textareaValue.length} characters remaining
+          </p>
+        ) : (
+          <span />
+        )}
 
+        <span
+          className={`text-xs tabular-nums ml-auto ${
+            isOverLimit
+              ? "text-red-400 font-medium"
+              : isNearLimit
+              ? "text-yellow-400"
+              : "text-gray-500"
+          }`}
+        >
+          {textareaValue.length} / {MAX_PROMPT_LENGTH}
+        </span>
+      </div>
+    </div>
+    
+
+{draftStatus && (
+   <p className="text-xs text-green-500 mt-2 px-1">
+    💾 {draftStatus}
+   </p>
+)}
+    
+    <p className="text-xs text-gray-500 mt-1 px-1">
+      💡  <span className="font-medium">Keyboard tip:</span> Press{" "}
+      <kbd className="px-1 py-0.5 text-xs bg-gray-700 rounded border border-gray-600">
+        Enter
+      </kbd>{" "}
+      to generate &bull;{" "}
+      <kbd className="px-1 py-0.5 text-xs bg-gray-700 rounded border border-gray-600">
+        Ctrl + Enter
+      </kbd>{" "}
+      also works &bull;{" "}
+      <kbd className="px-1 py-0.5 text-xs bg-gray-700 rounded border border-gray-600">
+        Shift + Enter
+      </kbd>{" "}
+      for new line
+    </p>
+
+    <div className="flex justify-end mt-2 w-full">
+      <button
+        type="submit"
+        disabled={loading || isOverLimit}
+        aria-busy={loading}
+        aria-disabled={loading || isOverLimit}
+        className={`rounded-lg bg-gradient-to-r from-blue-400 to-indigo-500 text-gray-200 px-6 py-3 font-semibold ${
+          loading || isOverLimit
+            ? "opacity-50 cursor-not-allowed"
+            : "cursor-pointer hover:shadow-lg hover:shadow-indigo-500/50 hover:scale-105"
+        } transition-all duration-300 transform flex items-center space-x-2 group`}
+      >
+        <i className="fas fa-wand-magic-sparkles text-xl transition-transform duration-300 group-hover:animate-wiggle"></i>
+        {loading ? "Generating..." : "Generate"}
+      </button>
+    </div>
+  </form>
+</div>
+            </div>
 
               <div className="text-[11px] font-medium leading-relaxed text-slate-400 dark:text-slate-500 select-none w-full box-border">
                 💡 <span className="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-1">{text.keyboardTip}</span>
