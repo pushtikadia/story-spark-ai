@@ -669,6 +669,8 @@ const StoriesComponent = () => {
           setGuestRequestCount(newCount);
           localStorage.setItem("guestRequestCount", String(newCount));
         }
+        // Scroll back to top after story generation
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (error: unknown) {
       const message = getErrorMessage(error);
