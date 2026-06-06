@@ -1,6 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { getFromLocalStorage } from '../utils/local-storage';
-import { AUTH_KEY } from '../constants/storage-key';
+import { isLoggedIn } from '../services/auth.service';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,20 +7,16 @@ interface ProtectedRouteProps {
 
 /**
  * SimpleProtectedRoute Component
- * Synchronously checks if user has valid auth token, Immediately redirects if no token (no loading state)
+ * Guards a route by verifying the stored token is present, structurally valid,
+ * and not expired. Redirects to /login immediately when any check fails.
  */
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  // Get token from localStorage SYNCHRONOUSLY (no useState needed)
-  const token = getFromLocalStorage(AUTH_KEY);
-  
-  // If NO token found → immediately redirect to login
-  if (!token) {
-    console.log("No token found, redirecting to login");
+  // isLoggedIn decodes the JWT and checks the `exp` claim, so expired or
+  // malformed tokens are treated the same as a missing token.
+  if (!isLoggedIn()) {
     return <Navigate to="/login" replace />;
   }
-  
-  // If token exists → show protected content
-  console.log("Token found, showing protected content");
+
   return <>{children}</>;
 };
 
