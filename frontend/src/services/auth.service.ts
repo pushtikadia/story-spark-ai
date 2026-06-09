@@ -43,7 +43,7 @@ const getValidDecodedToken = () => {
 
   if (authToken) {
     try {
-      const decodedData = decodedToken(authToken);
+      const decodedData = decodedToken(authToken) as any;
 
       if (!decodedData) {
         removeFromLocalStorage(AUTH_KEY);
