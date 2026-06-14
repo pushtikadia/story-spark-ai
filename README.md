@@ -46,6 +46,11 @@
 
 ## Features 💪
 
+- **Dark-Mode**: Toggle between light and dark themes for a comfortable reading experience.
+- **Google Login**: Sign in quickly and securely using your Google account.
+- **User Reviews**: Share your experience and explore reviews from the community.
+- **Subscription Plans**: Access unlimited story generation and team collaboration with paid plans.
+- **Featured Posts**: Discover featured posts curated from the community.
 - **AI-Powered Story Generation**: Create unique stories instantly using advanced AI models.
 - **Prompt-Based Storytelling**: Simply provide a prompt or idea and watch it come to life.
 - **Story Bookmarks/History**: Save your favorite generated stories and revisit your past creations.
