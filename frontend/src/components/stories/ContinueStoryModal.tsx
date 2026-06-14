@@ -18,10 +18,13 @@ export interface ContinueStoryModalProps {
   };
   /** Called when the modal is dismissed */
   onClose: () => void;
+  /** Called when the continued story is applied */
+  onApply: (continuedContent: string) => void;
 }
 
 interface BranchNode {
   id: string;
+  parentId: string | null;
   parentContent: string;
   continuation: string;
   depth: number;
@@ -34,7 +37,7 @@ const buildSeedPrompt = (content: string): string =>
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const ContinueStoryModal = ({ story, onClose }: ContinueStoryModalProps) => {
+const ContinueStoryModal = ({ story, onClose, onApply }: ContinueStoryModalProps) => {
   const auth = useContext(AuthContext);
   const isAuthenticated = !!auth?.accessToken;
 
@@ -55,6 +58,20 @@ const ContinueStoryModal = ({ story, onClose }: ContinueStoryModalProps) => {
   const [activeBranchId, setActiveBranchId] = useState<string | null>(null);
 
   const activeBranch = branches.find((b) => b.id === activeBranchId) ?? null;
+
+  const getFullContent = (branchId: string | null): string => {
+    if (!branchId) return story.content;
+    const path: BranchNode[] = [];
+    let currId: string | null = branchId;
+    while (currId) {
+      const node = branches.find((b) => b.id === currId);
+      if (!node) break;
+      path.unshift(node);
+      currId = node.parentId;
+    }
+    const continuations = path.map((node) => node.continuation.trim()).join("\n\n");
+    return `${story.content.trim()}\n\n${continuations}`;
+  };
 
   const handleGenerate = async () => {
     const seedPrompt = buildSeedPrompt(prompt);
@@ -77,6 +94,7 @@ const ContinueStoryModal = ({ story, onClose }: ContinueStoryModalProps) => {
       const continuation = result.data.continuation;
       const newBranch: BranchNode = {
         id: `branch-${Date.now()}`,
+        parentId: activeBranchId,
         parentContent: prompt,
         continuation,
         depth: activeBranch ? activeBranch.depth + 1 : 0,
@@ -93,6 +111,12 @@ const ContinueStoryModal = ({ story, onClose }: ContinueStoryModalProps) => {
   const handleExtendBranch = (branch: BranchNode) => {
     setActiveBranchId(branch.id);
     setPrompt(branch.continuation);
+  };
+
+  const handleApply = () => {
+    const fullStory = getFullContent(activeBranchId);
+    onApply(fullStory);
+    onClose();
   };
 
   const handleClose = () => {
@@ -253,6 +277,15 @@ const ContinueStoryModal = ({ story, onClose }: ContinueStoryModalProps) => {
                   <>✦ Generate Continuation</>
                 )}
               </button>
+              {branches.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleApply}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-6 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition-all hover:bg-cyan-400 hover:shadow-cyan-400/30 active:scale-[0.97]"
+                >
+                  ✓ Apply to Story
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleClose}

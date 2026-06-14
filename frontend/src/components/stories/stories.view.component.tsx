@@ -16,6 +16,7 @@ import {
 } from "../../redux/apis/ai.model.api";
 import ImageFallback from "../ImageFallback";
 import GeneratedStoryTimeline from "./GeneratedStoryTimeline";
+import ContinueStoryModal from "./ContinueStoryModal";
 export interface IStories {
   uuid: string;
   title: string;
@@ -99,6 +100,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [showWorldMap, setShowWorldMap] = useState<boolean>(false);
   const [, setShowRemix] = useState<boolean>(false);
+  const [showContinueModal, setShowContinueModal] = useState<boolean>(false);
   const [createPost] = useCreatePostMutation();
   const [deletePost] = useDeletePostMutation();
   const { data: profile } = useGetProfileInfoQuery(undefined, { skip: !isLogin });
@@ -844,6 +846,14 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                 </button>
                 <button
                   type="button"
+                  className="rounded-lg px-4 py-2 bg-cyan-700 text-slate-200 font-semibold cursor-pointer hover:bg-cyan-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setShowContinueModal(true)}
+                  disabled={!selectedStory}
+                >
+                  ✦ Continue Story
+                </button>
+                <button
+                  type="button"
                   id="publish-story-btn"
                   className={`rounded-lg px-5 py-2 font-semibold flex items-center space-x-2 cursor-pointer bg-blue-600 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${loading ? "" : "hover:bg-blue-500 hover:shadow-lg active:scale-95"
                     }`}
@@ -1222,6 +1232,25 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
           story={selectedStory.content}
           title={selectedStory.title}
           onClose={() => setShowWorldMap(false)}
+        />
+      )}
+      {showContinueModal && selectedStory && (
+        <ContinueStoryModal
+          story={selectedStory}
+          onClose={() => setShowContinueModal(false)}
+          onApply={(continuedContent) => {
+            setSelectedStory({
+              ...selectedStory,
+              content: continuedContent,
+            });
+            setStories(
+              stories.map((s) =>
+                s.uuid === selectedStory.uuid
+                  ? { ...s, content: continuedContent }
+                  : s
+              )
+            );
+          }}
         />
       )}
       <Toaster position="top-right" reverseOrder={false} />

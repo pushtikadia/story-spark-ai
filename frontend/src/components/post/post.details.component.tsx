@@ -38,6 +38,7 @@ import {
 } from "../../redux/apis/storyVersion.api";
 
 import { toast } from "react-hot-toast";
+import ContinueStoryModal from "../stories/ContinueStoryModal";
 
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -123,6 +124,7 @@ const PostDetailsComponent = () => {
   const [showTree, setShowTree] = useState(false);
   const [selectedVersionForBranch, setSelectedVersionForBranch] = useState<string | null>(null);
   const [showComparison, setShowComparison] = useState(false);
+  const [showContinueModal, setShowContinueModal] = useState(false);
 
   const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
   const readerPreferences = useReaderPreferences();
@@ -384,6 +386,12 @@ const PostDetailsComponent = () => {
                   className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:opacity-90 rounded-lg transition-all active:scale-95 cursor-pointer font-semibold shadow-md"
                 >
                   📊 Compare Variations
+                </button>
+                <button
+                  onClick={() => setShowContinueModal(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-teal-500 to-emerald-600 text-white hover:opacity-90 rounded-lg transition-all active:scale-95 cursor-pointer font-semibold shadow-md"
+                >
+                  ✦ Continue Story
                 </button>
               </div>
             )}
@@ -706,6 +714,33 @@ const PostDetailsComponent = () => {
             )}
           </div>
         </div>
+      )}
+
+      {showContinueModal && post && (
+        <ContinueStoryModal
+          story={{
+            title: post.title,
+            content: post.content,
+            language: post.language,
+          }}
+          onClose={() => setShowContinueModal(false)}
+          onApply={async (continuedContent) => {
+            try {
+              await updatePost({
+                id: id!,
+                data: {
+                  title: post.title,
+                  content: continuedContent,
+                  generationType: "regenerated",
+                },
+              }).unwrap();
+              toast.success("Story continued successfully!");
+            } catch (err) {
+              console.error(err);
+              toast.error("Failed to save continued story.");
+            }
+          }}
+        />
       )}
 
       <div className="absolute top-[-200px] left-[250px] w-[800px] h-[350px] bg-blue-500/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
