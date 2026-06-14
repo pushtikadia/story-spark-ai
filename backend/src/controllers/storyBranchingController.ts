@@ -64,7 +64,9 @@ Task:
 }
 `;
 
-      const result = await storyQueue.enqueue(() => generateStory(prompt));
+      const rawProvider = req.headers?.["x-model-provider"];
+      const provider = Array.isArray(rawProvider) ? rawProvider[0] : rawProvider;
+      const result = await storyQueue.enqueue(() => generateStory(prompt, provider));
 
       let parsed: { storySegment: string; choices: string[] };
       try {
