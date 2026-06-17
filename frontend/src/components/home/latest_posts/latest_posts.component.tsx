@@ -28,8 +28,6 @@ const LatestPostsComponent = () => {
   }, [posts.length]);
 
 
-
-
   if (isLoading) return <LoadingAnimation />;
 
   if (isError) {
@@ -52,17 +50,16 @@ const LatestPostsComponent = () => {
   }
 
   const seenIds = new Set<string>();
-  const uniquePosts = (data?.posts ?? []).filter((post: Post) => {
+  const uniquePosts = posts.filter((post: Post) => {
     if (!post?._id || seenIds.has(post._id)) return false;
     seenIds.add(post._id);
     return true;
   });
 
   const shouldShowLoadMore = uniquePosts.length > INITIAL_VISIBLE_COUNT;
-  const visiblePosts =
-    showAllPosts || !shouldShowLoadMore
-      ? uniquePosts
-      : uniquePosts.slice(0, INITIAL_VISIBLE_COUNT);
+  const visiblePosts = showAllPosts || !shouldShowLoadMore ? uniquePosts : uniquePosts.slice(0, INITIAL_VISIBLE_COUNT);
+
+  const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
 
   const toggleAccordion = (postId: string) => {
     setExpandedPostId((prevId) => (prevId === postId ? null : postId));
